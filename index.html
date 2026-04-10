@@ -58,12 +58,10 @@
 <div id="hint">🖱 Drag to orbit · Scroll to zoom · Buttons to jump views</div>
 <div id="cc"></div>
 <div id="ui">
-  <button class="cb active" onclick="goCam('overview',this)">🏠 Overview</button>
-  <button class="cb" onclick="goCam('front',this)">📦 Storage Wall</button>
-  <button class="cb" onclick="goCam('lounge',this)">🛋 Lounge</button>
-  <button class="cb" onclick="goCam('counter',this)">💻 Counters</button>
-  <button class="cb" onclick="goCam('entrance',this)">🚪 Entrance</button>
-  <button class="cb" onclick="goCam('aerial',this)">🦅 Aerial</button>
+  <button class="cb active" onclick="goCam('frontview',this)">👁 Front View</button>
+  <button class="cb" onclick="goCam('center',this)">🔄 Center Hub</button>
+  <button class="cb" onclick="goCam('left',this)">◀ Extreme Left</button>
+  <button class="cb" onclick="goCam('right',this)">▶ Extreme Right</button>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -331,65 +329,112 @@ PL(0xffe8c0,0.9,7,8.5,2.5,-3.5);
 PL(0xd4a830,0.75,4,8.5,1.8,-5.3);
 
 // ── CAMERA SYSTEM ──
+// Room bounds: X -11..+11, Z -7..+7, Y ceiling=4
+// All 4 views are human-eye height (y=1.65) strictly inside the room.
+// "frontview" = standing far back in the room looking at the full store hub
+// "center"    = standing in the open floor center, free 360 orbit
+// "left"      = standing at the extreme left end, looking right across the store
+// "right"     = standing at the extreme right (lounge end), looking left
+//
+// CAMS store: camera world position + orbit pivot (what it looks at)
+// phi clamped: min 0.38 (never above ceiling) to max 1.38 (never below floor)
+// radius clamped per view so camera stays inside walls
+
 const CAMS = {
-  overview: { pos:[0,3.2,13],  tgt:[0,1.5,0] },
-  front:    { pos:[-4,2.2,-8], tgt:[-4,1.8,-6.5] },
-  lounge:   { pos:[6.5,2.0,1], tgt:[8.5,1.5,-4] },
-  counter:  { pos:[1,1.8,-0.2],tgt:[-2,1.0,-1.5] },
-  entrance: { pos:[9,1.8,5],   tgt:[5,1.5,-1] },
-  aerial:   { pos:[0,12,4],    tgt:[0,0,-2] },
+  //  pos = camera eye position, tgt = orbit pivot
+  frontview: { pos:[0,   1.65, 9.5],  tgt:[0,   1.65,-1.0] },  // far front, looking deep into store
+  center:    { pos:[0,   1.65, 1.0],  tgt:[0,   1.65,-2.0] },  // center of open floor, full 360
+  left:      { pos:[-9,  1.65, 0.5],  tgt:[2,   1.65,-1.5] },  // extreme left, looking right
+  right:     { pos:[ 9,  1.65,-2.5],  tgt:[-2,  1.65,-1.5] },  // extreme right (lounge side), looking left
 };
 
-let isDrag=false,lx=0,ly=0;
-let theta=0,phi=0.35,radius=13;
-const tgt=new THREE.Vector3(0,1.5,0);
+// Radius limits per view — keeps camera inside the room when user drags
+const CAM_RADIUS_MAX = {
+  frontview: 11,
+  center:    8,
+  left:      12,
+  right:     12,
+};
+let currentView = 'frontview';
+
+let isDrag=false, lx=0, ly=0;
+let theta=0, phi=0.82, radius=11;
+const tgt = new THREE.Vector3(0, 1.65, -1.0);
+
+// Hard clamp — phi never lets camera go above ceiling (y>3.5) or below floor (y<0.3)
+function clampPhi(){ phi = Math.max(0.38, Math.min(1.35, phi)); }
 
 function updCam(){
+  clampPhi();
+  const maxR = CAM_RADIUS_MAX[currentView] || 11;
+  radius = Math.max(1.5, Math.min(maxR, radius));
   camera.position.set(
-    tgt.x+radius*Math.sin(phi)*Math.sin(theta),
-    tgt.y+radius*Math.cos(phi),
-    tgt.z+radius*Math.sin(phi)*Math.cos(theta)
+    tgt.x + radius * Math.sin(phi) * Math.sin(theta),
+    tgt.y + radius * Math.cos(phi),
+    tgt.z + radius * Math.sin(phi) * Math.cos(theta)
   );
   camera.lookAt(tgt);
 }
 updCam();
 
-const el=renderer.domElement;
-el.addEventListener('mousedown',e=>{isDrag=true;lx=e.clientX;ly=e.clientY;});
-el.addEventListener('mousemove',e=>{
-  if(!isDrag)return;
-  theta-=(e.clientX-lx)*0.008; phi=Math.max(0.08,Math.min(1.48,phi+(e.clientY-ly)*0.006));
-  lx=e.clientX;ly=e.clientY; updCam();
+const el = renderer.domElement;
+el.addEventListener('mousedown', e=>{ isDrag=true; lx=e.clientX; ly=e.clientY; });
+el.addEventListener('mousemove', e=>{
+  if(!isDrag) return;
+  theta -= (e.clientX-lx)*0.007;
+  phi   += (e.clientY-ly)*0.005;
+  lx=e.clientX; ly=e.clientY;
+  updCam();
 });
-el.addEventListener('mouseup',()=>isDrag=false);
-el.addEventListener('mouseleave',()=>isDrag=false);
-el.addEventListener('wheel',e=>{radius=Math.max(2,Math.min(28,radius+e.deltaY*0.015));updCam();},{passive:true});
-el.addEventListener('touchstart',e=>{isDrag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;},{passive:true});
-el.addEventListener('touchmove',e=>{
-  if(!isDrag)return;
-  theta-=(e.touches[0].clientX-lx)*0.008; phi=Math.max(0.08,Math.min(1.48,phi+(e.touches[0].clientY-ly)*0.006));
-  lx=e.touches[0].clientX;ly=e.touches[0].clientY; updCam();
-},{passive:true});
-el.addEventListener('touchend',()=>isDrag=false);
+el.addEventListener('mouseup',    ()=>isDrag=false);
+el.addEventListener('mouseleave', ()=>isDrag=false);
+el.addEventListener('wheel', e=>{
+  radius = Math.max(1.5, Math.min(CAM_RADIUS_MAX[currentView]||11, radius + e.deltaY*0.012));
+  updCam();
+},{ passive:true });
+el.addEventListener('touchstart', e=>{ isDrag=true; lx=e.touches[0].clientX; ly=e.touches[0].clientY; },{ passive:true });
+el.addEventListener('touchmove', e=>{
+  if(!isDrag) return;
+  theta -= (e.touches[0].clientX-lx)*0.007;
+  phi   += (e.touches[0].clientY-ly)*0.005;
+  lx=e.touches[0].clientX; ly=e.touches[0].clientY;
+  updCam();
+},{ passive:true });
+el.addEventListener('touchend', ()=>isDrag=false);
 
-function goCam(name,btn){
+function goCam(name, btn){
   document.querySelectorAll('.cb').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  const c=CAMS[name];
-  const ep=new THREE.Vector3(...c.pos), et=new THREE.Vector3(...c.tgt);
-  const d=new THREE.Vector3().subVectors(ep,et);
-  const nr=d.length(), nt=Math.atan2(d.x,d.z), np=Math.acos(Math.max(-1,Math.min(1,d.y/nr)));
-  const st=theta,sp=phi,sr=radius, sc=tgt.clone();
+  currentView = name;
+  const c = CAMS[name];
+  const ep = new THREE.Vector3(...c.pos);
+  const et = new THREE.Vector3(...c.tgt);
+
+  // Derive spherical coords from desired eye→target vector
+  const diff = new THREE.Vector3().subVectors(ep, et);
+  const nr   = diff.length();
+  const nt   = Math.atan2(diff.x, diff.z);
+  const np   = Math.acos(Math.max(-1, Math.min(1, diff.y / nr)));
+
+  const st=theta, sp=phi, sr=radius;
+  const sc=tgt.clone();
   let tt=0;
   (function step(){
-    tt+=0.025;
-    const e=tt<0.5?2*tt*tt:1-Math.pow(-2*tt+2,2)/2, ee=Math.min(1,e);
-    theta=st+(nt-st)*ee; phi=sp+(np-sp)*ee; radius=sr+(nr-sr)*ee;
-    tgt.lerpVectors(sc,et,ee); updCam();
+    tt += 0.022;
+    const ease = tt<0.5 ? 2*tt*tt : 1-Math.pow(-2*tt+2,2)/2;
+    const ee   = Math.min(1, ease);
+    theta  = st + (nt-st)*ee;
+    phi    = sp + (np-sp)*ee;
+    radius = sr + (nr-sr)*ee;
+    tgt.lerpVectors(sc, et, ee);
+    updCam();
     if(tt<1) requestAnimationFrame(step);
   })();
 }
-window.goCam=goCam;
+window.goCam = goCam;
+
+// Boot into frontview
+goCam('frontview', null);
 
 // ── RENDER ──
 let t=0;
