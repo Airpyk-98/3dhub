@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,49 +82,57 @@ cc.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1c1a18);
-scene.fog = new THREE.Fog(0xf0ece4, 35, 90);
+// Deepened the fog to match the dark aesthetic and create better depth
+scene.fog = new THREE.Fog(0x1c1a18, 20, 80);
 
 const camera = new THREE.PerspectiveCamera(54, W / H, 0.1, 200);
 
-// ── Materials ──
+// ── Materials (UPDATED FOR HIGH CONTRAST) ──
 const M = {
-  floor:   new THREE.MeshStandardMaterial({ color:0xf0ece4, roughness:0.07, metalness:0.02 }),
-  wall:    new THREE.MeshStandardMaterial({ color:0xf5f2ee, roughness:0.88 }),
-  wallAcc: new THREE.MeshStandardMaterial({ color:0x8a9e96, roughness:0.88 }),
-  ceil:    new THREE.MeshStandardMaterial({ color:0xfafafa, roughness:0.9 }),
-  sfFrame: new THREE.MeshStandardMaterial({ color:0x3a4a5c, roughness:0.55, metalness:0.55 }),
-  sfGold:  new THREE.MeshStandardMaterial({ color:0xc4a24a, roughness:0.22, metalness:0.88 }),
-  box:     new THREE.MeshStandardMaterial({ color:0xf0ede8, roughness:0.72 }),
-  boxBr:   new THREE.MeshStandardMaterial({ color:0xc4956a, roughness:0.75 }),
-  ctBase:  new THREE.MeshStandardMaterial({ color:0xfafaf8, roughness:0.22, metalness:0.1 }),
-  wood:    new THREE.MeshStandardMaterial({ color:0xd4a96a, roughness:0.52, metalness:0.04 }),
+  // Dark, reflective floor to ground the scene
+  floor:   new THREE.MeshStandardMaterial({ color:0x181a1d, roughness:0.12, metalness:0.2 }),
+  // Light, warm walls to contrast the floor
+  wall:    new THREE.MeshStandardMaterial({ color:0xeae5df, roughness:0.9 }),
+  // Dark charcoal accent wall
+  wallAcc: new THREE.MeshStandardMaterial({ color:0x22262a, roughness:0.8 }),
+  ceil:    new THREE.MeshStandardMaterial({ color:0xf5f5f5, roughness:0.9 }),
+  sfFrame: new THREE.MeshStandardMaterial({ color:0x111111, roughness:0.4, metalness:0.8 }),
+  sfGold:  new THREE.MeshStandardMaterial({ color:0xcca854, roughness:0.2, metalness:0.9 }),
+  // Pure white boxes to pop against dark elements
+  box:     new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.6 }),
+  boxBr:   new THREE.MeshStandardMaterial({ color:0xbb8855, roughness:0.7 }),
+  // Bright white counters to contrast with the dark floor
+  ctBase:  new THREE.MeshStandardMaterial({ color:0xf8f8f8, roughness:0.2, metalness:0.05 }),
+  wood:    new THREE.MeshStandardMaterial({ color:0xa87b42, roughness:0.6, metalness:0.0 }),
   glass:   new THREE.MeshStandardMaterial({ color:0xb0d4cc, roughness:0.04, transparent:true, opacity:0.28 }),
   glassC:  new THREE.MeshStandardMaterial({ color:0xc8e0dc, roughness:0.05, transparent:true, opacity:0.34 }),
-  sofa:    new THREE.MeshStandardMaterial({ color:0xf0e8d0, roughness:0.85 }),
-  sofaDk:  new THREE.MeshStandardMaterial({ color:0xe0d4b4, roughness:0.88 }),
+  sofa:    new THREE.MeshStandardMaterial({ color:0xe6dcc3, roughness:0.9 }),
+  sofaDk:  new THREE.MeshStandardMaterial({ color:0xbaa884, roughness:0.9 }),
   gold:    new THREE.MeshStandardMaterial({ color:0xd4a830, roughness:0.14, metalness:0.96 }),
-  scrOff:  new THREE.MeshStandardMaterial({ color:0x1a2a3a, roughness:0.12, metalness:0.6, emissive:0x0a1520, emissiveIntensity:0.3 }),
-  scrOn:   new THREE.MeshStandardMaterial({ color:0x4a7aaa, roughness:0.05, emissive:0x2a5a8a, emissiveIntensity:1.4 }),
-  pillar:  new THREE.MeshStandardMaterial({ color:0xf8f5f0, roughness:0.7 }),
-  ac:      new THREE.MeshStandardMaterial({ color:0xf2f0ee, roughness:0.38, metalness:0.18 }),
-  leaf:    new THREE.MeshStandardMaterial({ color:0x4a7a50, roughness:0.8 }),
-  leafDk:  new THREE.MeshStandardMaterial({ color:0x2a5a30, roughness:0.85 }),
-  marble:  new THREE.MeshStandardMaterial({ color:0xfcf8f4, roughness:0.09, metalness:0.05 }),
+  scrOff:  new THREE.MeshStandardMaterial({ color:0x0a0a0a, roughness:0.2, metalness:0.8, emissive:0x050505, emissiveIntensity:0.3 }),
+  scrOn:   new THREE.MeshStandardMaterial({ color:0x4a7aaa, roughness:0.05, emissive:0x2a6a9a, emissiveIntensity:1.6 }),
+  // Dark, imposing pillars to frame the scene
+  pillar:  new THREE.MeshStandardMaterial({ color:0x121315, roughness:0.4, metalness:0.3 }),
+  ac:      new THREE.MeshStandardMaterial({ color:0xe0dedc, roughness:0.4, metalness:0.1 }),
+  leaf:    new THREE.MeshStandardMaterial({ color:0x3a6a40, roughness:0.8 }),
+  leafDk:  new THREE.MeshStandardMaterial({ color:0x1a3a20, roughness:0.85 }),
+  marble:  new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.05, metalness:0.05 }),
   tGold:   new THREE.MeshStandardMaterial({ color:0xb8902a, roughness:0.18, metalness:0.92 }),
-  arcGlow: new THREE.MeshStandardMaterial({ color:0xd4a830, roughness:0.18, metalness:0.8, emissive:0xb48020, emissiveIntensity:0.7 }),
-  arcWall: new THREE.MeshStandardMaterial({ color:0x8a9e96, roughness:0.85 }),
-  tvFr:    new THREE.MeshStandardMaterial({ color:0x1a1a1a, roughness:0.3, metalness:0.72 }),
-  laptop:  new THREE.MeshStandardMaterial({ color:0xc0c8d0, roughness:0.18, metalness:0.82 }),
-  winFr:   new THREE.MeshStandardMaterial({ color:0xe8e4de, roughness:0.28, metalness:0.12 }),
+  arcGlow: new THREE.MeshStandardMaterial({ color:0xffc040, roughness:0.2, metalness:0.8, emissive:0xdd9020, emissiveIntensity:0.9 }),
+  arcWall: new THREE.MeshStandardMaterial({ color:0x22262a, roughness:0.85 }),
+  tvFr:    new THREE.MeshStandardMaterial({ color:0x050505, roughness:0.2, metalness:0.8 }),
+  laptop:  new THREE.MeshStandardMaterial({ color:0x99aab5, roughness:0.2, metalness:0.8 }),
+  winFr:   new THREE.MeshStandardMaterial({ color:0x111111, roughness:0.2, metalness:0.8 }),
   winGl:   new THREE.MeshStandardMaterial({ color:0x8ab0c8, roughness:0.02, transparent:true, opacity:0.25 }),
-  pot:     new THREE.MeshStandardMaterial({ color:0x6a8a70, roughness:0.7 }),
-  ledGlow: new THREE.MeshStandardMaterial({ color:0xffd080, emissive:0xffd060, emissiveIntensity:2.6 }),
-  ceilLt:  new THREE.MeshStandardMaterial({ color:0xfff8e8, emissive:0xfff0c0, emissiveIntensity:1.9 }),
-  grid:    new THREE.MeshStandardMaterial({ color:0xd8d4ce, roughness:0.8 }),
-  bookA:   new THREE.MeshStandardMaterial({ color:0xd4c090, roughness:0.6 }),
-  bookB:   new THREE.MeshStandardMaterial({ color:0xb09070, roughness:0.6 }),
-  acPanel: new THREE.MeshStandardMaterial({ color:0x223344, emissive:0x1133aa, emissiveIntensity:0.85 }),
-  acVent:  new THREE.MeshStandardMaterial({ color:0xd0ccc8, roughness:0.5 }),
+  pot:     new THREE.MeshStandardMaterial({ color:0x222222, roughness:0.7 }),
+  ledGlow: new THREE.MeshStandardMaterial({ color:0xffd080, emissive:0xffd060, emissiveIntensity:3.0 }),
+  ceilLt:  new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0xfff5d0, emissiveIntensity:2.2 }),
+  grid:    new THREE.MeshStandardMaterial({ color:0xb8b4ae, roughness:0.8 }),
+  // Added some vibrant colors to the books for a subtle pop
+  bookA:   new THREE.MeshStandardMaterial({ color:0xcc3333, roughness:0.6 }),
+  bookB:   new THREE.MeshStandardMaterial({ color:0x3355cc, roughness:0.6 }),
+  acPanel: new THREE.MeshStandardMaterial({ color:0x111111, emissive:0x0044ff, emissiveIntensity:1.2 }),
+  acVent:  new THREE.MeshStandardMaterial({ color:0x888888, roughness:0.5 }),
 };
 
 // ── Helpers ──
@@ -314,9 +323,11 @@ B(0.06,RH*0.7,0.08,M.winFr,9.2,RH*0.45,RD/2-0.06,0,0,0,false,false);
 B(3.8,0.06,0.08,M.winFr,9.2,RH*0.38,RD/2-0.06,0,0,0,false,false);
 PL(0xffd0a0,0.9,9,9.2,2.0,RD/2+1);
 
-// ── LIGHTING ──
-scene.add(new THREE.AmbientLight(0xfff0e8,0.68));
-const sun=new THREE.DirectionalLight(0xfff8e8,0.85);
+// ── LIGHTING (UPDATED) ──
+// Reduced ambient light for deeper shadows
+scene.add(new THREE.AmbientLight(0xfff0e8, 0.45)); 
+// Increased sunlight to make the lit areas punchier
+const sun=new THREE.DirectionalLight(0xfff8e8, 1.2);
 sun.position.set(8,12,8); sun.castShadow=true;
 sun.shadow.mapSize.width=1024; sun.shadow.mapSize.height=1024;
 sun.shadow.camera.left=-16; sun.shadow.camera.right=16;
@@ -328,27 +339,14 @@ const aL2=PL(0xffd080,1.0,6,1,-0.3,-1.2);
 PL(0xffe8c0,0.9,7,8.5,2.5,-3.5);
 PL(0xd4a830,0.75,4,8.5,1.8,-5.3);
 
-// ── CAMERA SYSTEM ──
-// Room bounds: X -11..+11, Z -7..+7, Y ceiling=4
-// All 4 views are human-eye height (y=1.65) strictly inside the room.
-// "frontview" = standing far back in the room looking at the full store hub
-// "center"    = standing in the open floor center, free 360 orbit
-// "left"      = standing at the extreme left end, looking right across the store
-// "right"     = standing at the extreme right (lounge end), looking left
-//
-// CAMS store: camera world position + orbit pivot (what it looks at)
-// phi clamped: min 0.38 (never above ceiling) to max 1.38 (never below floor)
-// radius clamped per view so camera stays inside walls
-
+// ── CAMERA SYSTEM (Includes AABB Boundary Clamp) ──
 const CAMS = {
-  //  pos = camera eye position, tgt = orbit pivot
-  frontview: { pos:[0,   1.65, 9.5],  tgt:[0,   1.65,-1.0] },  // far front, looking deep into store
-  center:    { pos:[0,   1.65, 1.0],  tgt:[0,   1.65,-2.0] },  // center of open floor, full 360
-  left:      { pos:[-9,  1.65, 0.5],  tgt:[2,   1.65,-1.5] },  // extreme left, looking right
-  right:     { pos:[ 9,  1.65,-2.5],  tgt:[-2,  1.65,-1.5] },  // extreme right (lounge side), looking left
+  frontview: { pos:[0,   1.65, 9.5],  tgt:[0,   1.65,-1.0] },
+  center:    { pos:[0,   1.65, 1.0],  tgt:[0,   1.65,-2.0] },
+  left:      { pos:[-9,  1.65, 0.5],  tgt:[2,   1.65,-1.5] },
+  right:     { pos:[ 9,  1.65,-2.5],  tgt:[-2,  1.65,-1.5] },
 };
 
-// Radius limits per view — keeps camera inside the room when user drags
 const CAM_RADIUS_MAX = {
   frontview: 11,
   center:    8,
@@ -361,18 +359,23 @@ let isDrag=false, lx=0, ly=0;
 let theta=0, phi=0.82, radius=11;
 const tgt = new THREE.Vector3(0, 1.65, -1.0);
 
-// Hard clamp — phi never lets camera go above ceiling (y>3.5) or below floor (y<0.3)
 function clampPhi(){ phi = Math.max(0.38, Math.min(1.35, phi)); }
 
 function updCam(){
   clampPhi();
   const maxR = CAM_RADIUS_MAX[currentView] || 11;
   radius = Math.max(1.5, Math.min(maxR, radius));
-  camera.position.set(
-    tgt.x + radius * Math.sin(phi) * Math.sin(theta),
-    tgt.y + radius * Math.cos(phi),
-    tgt.z + radius * Math.sin(phi) * Math.cos(theta)
-  );
+  
+  let cx = tgt.x + radius * Math.sin(phi) * Math.sin(theta);
+  let cy = tgt.y + radius * Math.cos(phi);
+  let cz = tgt.z + radius * Math.sin(phi) * Math.cos(theta);
+
+  // AABB Constraint (Keeps camera from clipping through walls)
+  cx = Math.max(-10.5, Math.min(10.5, cx));
+  cy = Math.max(0.5, Math.min(3.5, cy));
+  cz = Math.max(-6.5, Math.min(6.5, cz));
+
+  camera.position.set(cx, cy, cz);
   camera.lookAt(tgt);
 }
 updCam();
@@ -410,7 +413,6 @@ function goCam(name, btn){
   const ep = new THREE.Vector3(...c.pos);
   const et = new THREE.Vector3(...c.tgt);
 
-  // Derive spherical coords from desired eye→target vector
   const diff = new THREE.Vector3().subVectors(ep, et);
   const nr   = diff.length();
   const nt   = Math.atan2(diff.x, diff.z);
@@ -455,3 +457,6 @@ window.addEventListener('resize',()=>{
 </script>
 </body>
 </html>
+
+
+```
