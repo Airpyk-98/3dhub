@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,401 +5,447 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premium Gallery Laptop Boutique</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #f0f0f0; overflow: hidden; font-family: 'Segoe UI', sans-serif; width: 100vw; height: 100vh; }
-  #cc { width: 100%; height: 100%; position: relative; }
-  canvas { display: block; width: 100% !important; height: 100% !important; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#0a0a0a;overflow:hidden;font-family:'Segoe UI',sans-serif;width:100vw;height:100vh;}
+  #cc{width:100%;height:100%;position:relative;}
+  canvas{display:block;width:100%!important;height:100%!important;}
 
-  #ui {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    display: flex; gap: 15px; z-index: 100;
+  #ui{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+    display:flex;gap:15px;z-index:100;
   }
-  .btn {
-    background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(200, 160, 80, 0.5);
-    color: #a07a30; padding: 12px 24px; border-radius: 50px; cursor: pointer;
-    font-size: 12px; letter-spacing: 0.15em; backdrop-filter: blur(12px);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; font-weight: 700;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  .btn{
+    background:rgba(255,255,255,0.08);border:1px solid rgba(200,160,80,0.4);
+    color:#c8a050;padding:12px 28px;border-radius:50px;cursor:pointer;
+    font-size:11px;letter-spacing:0.18em;backdrop-filter:blur(16px);
+    transition:all 0.35s cubic-bezier(0.4,0,0.2,1);text-transform:uppercase;font-weight:700;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
   }
-  .btn:hover, .btn.active {
-    background: #c8a050; border-color: #c8a050;
-    box-shadow: 0 4px 20px rgba(200, 160, 80, 0.4); color: #fff;
+  .btn:hover,.btn.active{
+    background:rgba(200,160,80,0.85);border-color:#c8a050;
+    box-shadow:0 4px 28px rgba(200,160,80,0.5);color:#fff;
   }
-  
-  #overlay {
-    position: fixed; inset: 0; background: #ffffff;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    z-index: 999; transition: opacity 0.3s ease-in-out; pointer-events: none;
-  }
-  #overlay.hide { opacity: 0; }
-  .loader {
-    width: 40px; height: 40px; border: 2px solid rgba(200,160,80,0.2);
-    border-top-color: #c8a050; border-radius: 50%;
-    animation: spin 1s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite; margin-bottom: 20px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  #overlay h1 { color: #c8a050; font-size: 12px; letter-spacing: 0.3em; font-weight: 600; text-transform: uppercase;}
 
-  #hint {
-    position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
-    color: rgba(50,50,50,0.8); font-size: 10px; letter-spacing: 0.2em;
-    z-index: 100; pointer-events: none; background: rgba(255,255,255,0.7);
-    padding: 8px 24px; border-radius: 30px; backdrop-filter: blur(8px);
-    border: 1px solid rgba(0,0,0,0.05); text-transform: uppercase; font-weight: 600;
+  #overlay{
+    position:fixed;inset:0;
+    background:linear-gradient(135deg,#0a0a0a 0%,#111108 50%,#0a0a0a 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:999;transition:opacity 0.8s ease;
+  }
+  #overlay.hide{opacity:0;pointer-events:none;}
+  .loader-ring{
+    width:52px;height:52px;border:2px solid rgba(200,160,80,0.15);
+    border-top-color:#c8a050;border-radius:50%;
+    animation:spin 1s linear infinite;margin-bottom:24px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #overlay h1{color:#c8a050;font-size:11px;letter-spacing:0.4em;font-weight:500;text-transform:uppercase;opacity:0.9;}
+  #overlay p{color:rgba(200,160,80,0.4);font-size:9px;letter-spacing:0.25em;margin-top:8px;text-transform:uppercase;}
+
+  #hint{
+    position:fixed;top:22px;left:50%;transform:translateX(-50%);
+    color:rgba(255,255,255,0.55);font-size:9px;letter-spacing:0.22em;
+    z-index:100;pointer-events:none;background:rgba(0,0,0,0.35);
+    padding:8px 22px;border-radius:30px;backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.07);text-transform:uppercase;font-weight:600;
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
 <div id="overlay">
-  <div class="loader"></div>
+  <div class="loader-ring"></div>
   <h1>Loading Environment</h1>
+  <p>Premium Gallery Boutique</p>
 </div>
 
-<div id="hint">🖱 Drag to Look · Scroll to Zoom</div>
-
+<div id="hint">🖱 Drag to Look &nbsp;·&nbsp; Scroll to Zoom</div>
 <div id="cc"></div>
-
 <div id="ui">
   <button class="btn active" id="btnLounge" onclick="switchRoom('lounge')">Gallery Lounge</button>
   <button class="btn" id="btnStore" onclick="switchRoom('store')">Staff Store Room</button>
 </div>
 
-<script>
-const cc = document.getElementById('cc');
-const W = cc.clientWidth, H = cc.clientHeight;
+<!-- Use importmap for reliable ESM loading — avoids CDN script tag race conditions -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+  }
+}
+</script>
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-renderer.setSize(W, H);
+<script type="module">
+import * as THREE from 'three';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+const cc = document.getElementById('cc');
+
+// ── RENDERER ──
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference:'high-performance', alpha:false });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1; 
+renderer.toneMappingExposure = 1.25;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 cc.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xfcfcfc);
-scene.fog = new THREE.FogExp2(0xfcfcfc, 0.015);
+scene.background = new THREE.Color(0x111111);
+scene.fog = new THREE.FogExp2(0x111111, 0.012);
 
-const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.05, 120);
 
-// ── PROCEDURAL TEXTURE GENERATORS ──
-function createSignTexture(text, bgColor, textColor, isHP = false) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512; canvas.height = 256;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = bgColor; ctx.fillRect(0, 0, 512, 256);
-  if(isHP) {
-    ctx.beginPath(); ctx.arc(256, 128, 90, 0, Math.PI*2);
-    ctx.fillStyle = '#0070D1'; ctx.fill();
-    ctx.fillStyle = '#ffffff'; ctx.font = 'italic bold 110px serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('hp', 256, 138);
-  } else {
-    ctx.fillStyle = textColor; ctx.font = 'bold 50px sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.letterSpacing = "5px"; ctx.fillText(text, 256, 128);
+function resize() {
+  const W = cc.clientWidth, H = cc.clientHeight;
+  renderer.setSize(W, H);
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── PROCEDURAL ENVIRONMENT MAP (replaces RGBE for zero-dep hosting) ──
+function buildEnvMap() {
+  const pmremGen = new THREE.PMREMGenerator(renderer);
+  pmremGen.compileEquirectangularShader();
+
+  // Build a gradient sky as environment
+  const rt = new THREE.WebGLCubeRenderTarget(256);
+  const cubeCamera = new THREE.CubeCamera(0.1, 10, rt);
+  const envScene = new THREE.Scene();
+
+  // Sky gradient sphere
+  const skyGeo = new THREE.SphereGeometry(5, 32, 32);
+  const skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    uniforms: { topColor: {value:new THREE.Color(0x111a2e)}, bottomColor: {value:new THREE.Color(0x3a2200)} },
+    vertexShader:`varying vec3 vPos; void main(){vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform vec3 topColor,bottomColor; varying vec3 vPos;
+      void main(){float t=clamp((vPos.y+5.)/10.,0.,1.);gl_FragColor=vec4(mix(bottomColor,topColor,t),1.);}`
+  });
+  envScene.add(new THREE.Mesh(skyGeo, skyMat));
+  cubeCamera.update(renderer, envScene);
+
+  const envTex = pmremGen.fromCubemap(rt.texture).texture;
+  pmremGen.dispose();
+  return envTex;
+}
+
+const envMap = buildEnvMap();
+scene.environment = envMap;
+
+// ── TEXTURE GENERATORS ──
+function tex(fn) {
+  const c = document.createElement('canvas');
+  fn(c); const t = new THREE.CanvasTexture(c);
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy(); return t;
+}
+
+const tileTex = tex(c => {
+  c.width=c.height=1024; const x=c.getContext('2d');
+  // Base warm marble tone
+  const g = x.createLinearGradient(0,0,1024,1024);
+  g.addColorStop(0,'#f7f5f0'); g.addColorStop(0.5,'#edeae2'); g.addColorStop(1,'#f2efe8');
+  x.fillStyle=g; x.fillRect(0,0,1024,1024);
+  // Subtle vein lines
+  x.strokeStyle='rgba(200,192,175,0.4)'; x.lineWidth=1.5;
+  for(let i=0;i<8;i++){
+    x.beginPath(); x.moveTo(Math.random()*1024,0);
+    x.bezierCurveTo(Math.random()*1024,300,Math.random()*1024,700,Math.random()*1024,1024);
+    x.stroke();
   }
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  return tex;
-}
+  // Tile grout lines
+  x.strokeStyle='rgba(180,175,165,0.6)'; x.lineWidth=2;
+  for(let i=0;i<=4;i++){
+    x.beginPath(); x.moveTo(256*i,0); x.lineTo(256*i,1024); x.stroke();
+    x.beginPath(); x.moveTo(0,256*i); x.lineTo(1024,256*i); x.stroke();
+  }
+});
+tileTex.wrapS=tileTex.wrapT=THREE.RepeatWrapping; tileTex.repeat.set(8,8);
 
-function createTileTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512; canvas.height = 512;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#fdfdfd'; ctx.fillRect(0, 0, 512, 512); 
-  ctx.strokeStyle = '#e2e2e2'; ctx.lineWidth = 3; 
-  ctx.beginPath(); ctx.moveTo(256, 0); ctx.lineTo(256, 512); ctx.moveTo(0, 256); ctx.lineTo(512, 256); ctx.stroke();
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(10, 10); 
-  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  return tex;
-}
+const tileNorm = tex(c=>{
+  c.width=c.height=256; const x=c.getContext('2d');
+  x.fillStyle='#8080ff'; x.fillRect(0,0,256,256);
+  // Grid bump
+  x.strokeStyle='#6060df'; x.lineWidth=3;
+  for(let i=0;i<=4;i++){x.beginPath();x.moveTo(64*i,0);x.lineTo(64*i,256);x.stroke();x.beginPath();x.moveTo(0,64*i);x.lineTo(256,64*i);x.stroke();}
+});
+tileNorm.wrapS=tileNorm.wrapT=THREE.RepeatWrapping; tileNorm.repeat.set(8,8);
 
-function createArtTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 800; canvas.height = 500;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#e5e5e5'; ctx.fillRect(0,0,800,500); 
-  ctx.fillStyle = '#111111'; ctx.beginPath(); ctx.arc(350, 250, 150, 0, Math.PI*2); ctx.fill(); 
-  ctx.fillStyle = '#c8a050'; ctx.beginPath(); ctx.arc(450, 300, 100, 0, Math.PI*2); ctx.fill(); 
-  ctx.fillStyle = '#8b4522'; ctx.fillRect(150, 100, 50, 300); 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  return tex;
-}
+const wallTex = tex(c=>{
+  c.width=c.height=512; const x=c.getContext('2d');
+  x.fillStyle='#f4f2ee'; x.fillRect(0,0,512,512);
+  // Subtle stucco noise
+  for(let i=0;i<2000;i++){
+    x.fillStyle=`rgba(${180+Math.random()*20|0},${178+Math.random()*20|0},${170+Math.random()*20|0},0.12)`;
+    x.fillRect(Math.random()*512,Math.random()*512,2,2);
+  }
+});
+wallTex.wrapS=wallTex.wrapT=THREE.RepeatWrapping; wallTex.repeat.set(3,2);
 
-const signTex = createSignTexture('STAFF ONLY', '#e0e0e0', '#222222');
-const hpTex = createSignTexture('', '#d0d0d0', '', true);
-const hpdTex = createSignTexture('', '#a0a0a0', '', true);
-const tileTex = createTileTexture();
-const artTex = createArtTexture();
+const artTex = tex(c=>{
+  c.width=800;c.height=500; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,800,500);
+  g.addColorStop(0,'#1a1a2e'); g.addColorStop(1,'#16213e');
+  x.fillStyle=g; x.fillRect(0,0,800,500);
+  // Abstract composition
+  for(let i=0;i<5;i++){
+    const grd=x.createRadialGradient(100+i*150,250,10,100+i*150,250,120);
+    grd.addColorStop(0,`hsla(${30+i*40},70%,60%,0.6)`);
+    grd.addColorStop(1,'transparent');
+    x.fillStyle=grd; x.beginPath(); x.arc(100+i*150,250,120,0,Math.PI*2); x.fill();
+  }
+  x.strokeStyle='rgba(200,160,80,0.5)'; x.lineWidth=2;
+  for(let i=0;i<6;i++){x.beginPath();x.moveTo(Math.random()*800,Math.random()*500);x.lineTo(Math.random()*800,Math.random()*500);x.stroke();}
+});
+
+const signTex = tex(c=>{
+  c.width=512;c.height=256; const x=c.getContext('2d');
+  x.fillStyle='#1a1a1a'; x.fillRect(0,0,512,256);
+  x.fillStyle='#c8a050'; x.font='bold 42px sans-serif';
+  x.textAlign='center'; x.textBaseline='middle'; x.fillText('STAFF ONLY',256,128);
+  x.strokeStyle='rgba(200,160,80,0.4)'; x.lineWidth=4;
+  x.strokeRect(10,10,492,236);
+});
+
+const hpTex = tex(c=>{
+  c.width=512;c.height=512; const x=c.getContext('2d');
+  x.fillStyle='#e8e4dc'; x.fillRect(0,0,512,512);
+  x.beginPath(); x.arc(256,256,110,0,Math.PI*2);
+  x.fillStyle='#0070D1'; x.fill();
+  x.fillStyle='#fff'; x.font='italic bold 120px serif';
+  x.textAlign='center'; x.textBaseline='middle'; x.fillText('hp',256,268);
+});
+
+// Laptop lid texture with subtle brushed pattern
+const lapTexSilver = tex(c=>{
+  c.width=256;c.height=256; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,256,256);
+  g.addColorStop(0,'#d8dde2'); g.addColorStop(0.5,'#e8ecf0'); g.addColorStop(1,'#cfd5da');
+  x.fillStyle=g; x.fillRect(0,0,256,256);
+  x.strokeStyle='rgba(255,255,255,0.12)'; x.lineWidth=1;
+  for(let i=0;i<256;i+=3){x.beginPath();x.moveTo(0,i);x.lineTo(256,i);x.stroke();}
+});
+const lapTexBlack = tex(c=>{
+  c.width=256;c.height=256; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,256,256);
+  g.addColorStop(0,'#1c1c1e'); g.addColorStop(0.5,'#2a2a2c'); g.addColorStop(1,'#111113');
+  x.fillStyle=g; x.fillRect(0,0,256,256);
+  for(let i=0;i<256;i+=3){x.strokeStyle='rgba(255,255,255,0.03)';x.lineWidth=1;x.beginPath();x.moveTo(0,i);x.lineTo(256,i);x.stroke();}
+});
+
+// Screen texture with UI mockup
+const screenTex = tex(c=>{
+  c.width=512;c.height=360; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,360);
+  g.addColorStop(0,'#0d1117'); g.addColorStop(1,'#161b22');
+  x.fillStyle=g; x.fillRect(0,0,512,360);
+  // Menu bar
+  x.fillStyle='rgba(255,255,255,0.06)'; x.fillRect(0,0,512,28);
+  // Window dots
+  ['#ff5f57','#febc2e','#28c840'].forEach((cl,i)=>{x.fillStyle=cl;x.beginPath();x.arc(18+i*22,14,6,0,Math.PI*2);x.fill();});
+  // Code lines
+  const colors=['#79c0ff','#a5f3a0','#ffa657','rgba(255,255,255,0.3)','#ff7b72'];
+  for(let i=0;i<12;i++){
+    x.fillStyle=colors[i%colors.length]; x.fillRect(20+Math.random()*60,44+i*24,30+Math.random()*200,8);
+    if(Math.random()>0.5){x.fillStyle='rgba(255,255,255,0.15)';x.fillRect(260+Math.random()*80,44+i*24,20+Math.random()*100,8);}
+  }
+  // Glare overlay
+  const gl=x.createLinearGradient(0,0,256,180);
+  gl.addColorStop(0,'rgba(255,255,255,0.06)');gl.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=gl; x.fillRect(0,0,512,360);
+});
 
 // ── MATERIALS ──
 const M = {
-  floorLounge: new THREE.MeshStandardMaterial({ map: tileTex, roughness: 0.05, metalness: 0.15 }),
-  wallLounge:  new THREE.MeshStandardMaterial({ color: 0xfcfcfc, roughness: 0.9 }), 
-  wallAcc:     new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.8 }), 
-  gold:        new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.2, metalness: 0.9 }),
-  marbleBlack: new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.05, metalness: 0.2 }), 
-  leather:     new THREE.MeshStandardMaterial({ color: 0x9b5a2b, roughness: 0.6 }), 
-  rug:         new THREE.MeshStandardMaterial({ color: 0x222629, roughness: 0.95 }), 
-  pillowE:     new THREE.MeshStandardMaterial({ color: 0x1a3a2a, roughness: 0.8 }), 
-  pillowT:     new THREE.MeshStandardMaterial({ color: 0xeae6dd, roughness: 0.8 }), 
-  glassShelf:  new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0.1, roughness: 0.02, transmission: 0.95, transparent: true, opacity: 0.6, ior: 1.5, thickness: 0.2, clearcoat: 1.0, side: THREE.DoubleSide }),
-  glassWall:   new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0.05, roughness: 0.02, transmission: 0.98, transparent: true, opacity: 1, side: THREE.DoubleSide }),
-  glassTinted: new THREE.MeshPhysicalMaterial({ color: 0x111111, metalness: 0.3, roughness: 0.05, transmission: 0.85, transparent: true, opacity: 1, ior: 1.6, thickness: 0.5, side: THREE.DoubleSide }),
-  screenGlow:  new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x2a77ff, emissiveIntensity: 1.5 }), 
-  doorFrame:   new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.3, metalness: 0.7 }),
-  sign:        new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.4, metalness: 0.1 }),
-  waterBody:   new THREE.MeshStandardMaterial({ color: 0xe8e8e8, roughness: 0.3, metalness: 0.1 }),
-  waterAlcove: new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5 }),
-  waterGlow:   new THREE.MeshStandardMaterial({ color: 0x00aaff, emissive: 0x0066ff, emissiveIntensity: 2.0 }),
-  artFrame:    new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.6 }),
-  artCanvas:   new THREE.MeshStandardMaterial({ map: artTex, roughness: 0.8 }),
-  ceilPanel:   new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfffcf0, emissiveIntensity: 1.8 }), 
-  shelfLED:    new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.2 }), 
-  fridgeMetal: new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.25, metalness: 0.85 }),
-  chairFabric: new THREE.MeshStandardMaterial({ color: 0x181818, roughness: 0.8 }),
-  plantLeaves: new THREE.MeshStandardMaterial({ color: 0x2a4a30, roughness: 0.8 }),
+  floorLounge: new THREE.MeshStandardMaterial({
+    map:tileTex, normalMap:tileNorm, normalScale:new THREE.Vector2(0.5,0.5),
+    roughness:0.08, metalness:0.2, envMap, envMapIntensity:0.8
+  }),
+  wallLounge: new THREE.MeshStandardMaterial({ map:wallTex, roughness:0.88, metalness:0.0, envMapIntensity:0.1 }),
+  wallAcc:    new THREE.MeshStandardMaterial({ color:0xeae8e4, roughness:0.82 }),
+  gold:       new THREE.MeshStandardMaterial({ color:0xd4af37, roughness:0.18, metalness:0.95, envMap, envMapIntensity:1.2 }),
+  marbleBlack:new THREE.MeshStandardMaterial({ color:0x080808, roughness:0.04, metalness:0.25, envMap, envMapIntensity:1.0 }),
+  leather:    new THREE.MeshStandardMaterial({ color:0x8b4a22, roughness:0.65, metalness:0.0 }),
+  rug:        new THREE.MeshStandardMaterial({ color:0x1e2326, roughness:0.98 }),
+  pillowE:    new THREE.MeshStandardMaterial({ color:0x162a1e, roughness:0.85 }),
+  pillowT:    new THREE.MeshStandardMaterial({ color:0xe8e4da, roughness:0.85 }),
 
-  // Store Room
-  floorStore:  new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.6 }),
-  wallStore:   new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.9 }),
-  shelfMetal:  new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, metalness: 0.6 }),
-  boxHP:       new THREE.MeshStandardMaterial({ map: hpTex, roughness: 0.9 }),
-  boxHPDark:   new THREE.MeshStandardMaterial({ map: hpdTex, roughness: 0.9 }),
-  cardboard:   new THREE.MeshStandardMaterial({ color: 0x9b8262, roughness: 0.9 }),
-  
-  // Premium Laptop Finishes
-  lapBlack:  new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.25, metalness: 0.85 }),
-  lapSilver: new THREE.MeshStandardMaterial({ color: 0xe0e5e9, roughness: 0.25, metalness: 0.85 }),
-  lapPink:   new THREE.MeshStandardMaterial({ color: 0xebb4c2, roughness: 0.25, metalness: 0.85 }),
-  lapGold:   new THREE.MeshStandardMaterial({ color: 0xdeb861, roughness: 0.20, metalness: 0.90 }),
-  lapBlue:   new THREE.MeshStandardMaterial({ color: 0x284f85, roughness: 0.25, metalness: 0.85 })
+  // REALISTIC GLASS — MeshPhysicalMaterial with transmission
+  glassShelf: new THREE.MeshPhysicalMaterial({
+    color:0xffffff, metalness:0.0, roughness:0.0,
+    transmission:0.97, transparent:true,
+    ior:1.52, thickness:0.3,
+    clearcoat:1.0, clearcoatRoughness:0.0,
+    reflectivity:0.9, envMap, envMapIntensity:1.5,
+    side:THREE.DoubleSide
+  }),
+  glassWall: new THREE.MeshPhysicalMaterial({
+    color:0xd4e8f5, metalness:0.0, roughness:0.0,
+    transmission:0.96, transparent:true,
+    ior:1.5, thickness:0.15,
+    clearcoat:1.0, clearcoatRoughness:0.0,
+    reflectivity:0.8, envMap, envMapIntensity:1.2,
+    side:THREE.DoubleSide
+  }),
+  glassTinted: new THREE.MeshPhysicalMaterial({
+    color:0x0a1218, metalness:0.05, roughness:0.0,
+    transmission:0.78, transparent:true,
+    ior:1.55, thickness:0.8,
+    clearcoat:1.0, clearcoatRoughness:0.0,
+    reflectivity:0.95, envMap, envMapIntensity:1.8,
+    side:THREE.DoubleSide
+  }),
+
+  // REALISTIC LAPTOP MATERIALS
+  lapBlack: new THREE.MeshStandardMaterial({ map:lapTexBlack, roughness:0.22, metalness:0.92, envMap, envMapIntensity:1.1 }),
+  lapSilver:new THREE.MeshStandardMaterial({ map:lapTexSilver, roughness:0.20, metalness:0.95, envMap, envMapIntensity:1.3 }),
+  lapPink:  new THREE.MeshStandardMaterial({ color:0xebb4c2, roughness:0.22, metalness:0.88, envMap, envMapIntensity:1.0 }),
+  lapGold:  new THREE.MeshStandardMaterial({ color:0xdeb861, roughness:0.18, metalness:0.95, envMap, envMapIntensity:1.2 }),
+  lapBlue:  new THREE.MeshStandardMaterial({ color:0x1e3a6a, roughness:0.22, metalness:0.90, envMap, envMapIntensity:1.1 }),
+
+  // Screens
+  screen: new THREE.MeshStandardMaterial({ map:screenTex, roughness:0.05, metalness:0.0, emissive:0x1a3a6a, emissiveIntensity:0.15 }),
+  screenBezel: new THREE.MeshStandardMaterial({ color:0x080808, roughness:0.3, metalness:0.7, envMap, envMapIntensity:0.8 }),
+
+  doorFrame:  new THREE.MeshStandardMaterial({ color:0x1a1a1a, roughness:0.25, metalness:0.8, envMap, envMapIntensity:0.9 }),
+  sign:       new THREE.MeshStandardMaterial({ map:signTex, roughness:0.4 }),
+  waterBody:  new THREE.MeshStandardMaterial({ color:0xd8d5cf, roughness:0.25, metalness:0.15 }),
+  artFrame:   new THREE.MeshStandardMaterial({ color:0x0a0a0a, roughness:0.55, metalness:0.3 }),
+  artCanvas:  new THREE.MeshStandardMaterial({ map:artTex, roughness:0.85 }),
+  ceilPanel:  new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0xfff8e8, emissiveIntensity:2.2 }),
+  shelfLED:   new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0xffffff, emissiveIntensity:1.6 }),
+  fridgeMetal:new THREE.MeshStandardMaterial({ color:0x222426, roughness:0.2, metalness:0.92, envMap, envMapIntensity:1.2 }),
+  chairFabric:new THREE.MeshStandardMaterial({ color:0x111214, roughness:0.88 }),
+  plantLeaves:new THREE.MeshStandardMaterial({ color:0x243d28, roughness:0.82 }),
+  floorStore: new THREE.MeshStandardMaterial({ color:0xb8b5af, roughness:0.6 }),
+  wallStore:  new THREE.MeshStandardMaterial({ color:0xe8e5e0, roughness:0.88 }),
+  shelfMetal: new THREE.MeshStandardMaterial({ color:0x2a2d30, roughness:0.45, metalness:0.7 }),
+  boxHP:      new THREE.MeshStandardMaterial({ map:hpTex, roughness:0.9 }),
+  cardboard:  new THREE.MeshStandardMaterial({ color:0x967f5a, roughness:0.92 }),
 };
 
 // ── HELPERS ──
-function B(w,h,d,mat,x,y,z, rotY=0){
+function B(w,h,d,mat,x,y,z,rotY=0){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-  m.position.set(x,y,z); m.rotation.y = rotY;
+  m.position.set(x,y,z); m.rotation.y=rotY;
   m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
 }
-function CY(r,h,mat,x,y,z){
-  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,32),mat);
+function CY(r,h,mat,x,y,z,seg=32){
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),mat);
   m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
 }
 
 // ── ARCHITECTURE ──
-B(16, 0.2, 16, M.floorLounge, -4, -0.1, 0); 
-B(10, 0.2, 10, M.floorStore, 9, -0.1, 0);   
-B(16, 4.2, 0.4, M.wallLounge, -4, 2, -8.2); // Back wall
-B(0.4, 4.2, 16.4, M.wallLounge, -12.2, 2, 0); // Left wall
-B(10, 4.2, 0.4, M.wallStore, 9, 2, -5.2);
-B(10, 4.2, 0.4, M.wallStore, 9, 2,  5.2);
-B(0.4, 4.2, 10.4, M.wallStore, 14.2, 2, 0);
-B(28, 0.2, 18, M.wallLounge, 1, 4.3, 0); // Ceiling block
+B(16,0.2,16,M.floorLounge,-4,-0.1,0);
+B(10,0.2,10,M.floorStore,9,-0.1,0);
+B(16,4.2,0.4,M.wallLounge,-4,2,-8.2);
+B(0.4,4.2,16.4,M.wallLounge,-12.2,2,0);
+B(10,4.2,0.4,M.wallStore,9,2,-5.2);
+B(10,4.2,0.4,M.wallStore,9,2,5.2);
+B(0.4,4.2,10.4,M.wallStore,14.2,2,0);
+B(28,0.2,18,M.wallLounge,1,4.3,0); // ceiling
 
-// ── GLASS ENTRANCE FACADE (Front Wall Z=8.2) ──
-B(16, 0.4, 0.2, M.wallLounge, -4, 0.2, 8.2); // Low base wall
-B(16, 0.6, 0.2, M.wallLounge, -4, 3.9, 8.2); // Top header
-B(16, 3.1, 0.05, M.glassWall, -4, 1.95, 8.2).castShadow = false; // Main Glass Wall
-B(0.1, 3.1, 0.15, M.doorFrame, -2.0, 1.95, 8.2); // Left Door Frame
-B(0.1, 3.1, 0.15, M.doorFrame,  1.0, 1.95, 8.2); // Right Door Frame
-B(3.1, 0.1, 0.15, M.doorFrame, -0.5, 3.45, 8.2); // Top Door Frame
-B(0.05, 3.1, 0.15, M.doorFrame, -0.5, 1.95, 8.2); // Center Double Door Split
-CY(0.02, 0.8, M.gold, -0.6, 1.5, 8.28); // Handle L
-CY(0.02, 0.8, M.gold, -0.4, 1.5, 8.28); // Handle R
+// ── GLASS ENTRANCE ──
+B(16,0.4,0.2,M.wallLounge,-4,0.2,8.2);
+B(16,0.6,0.2,M.wallLounge,-4,3.9,8.2);
+const mainGlass=B(16,3.1,0.05,M.glassWall,-4,1.95,8.2); mainGlass.castShadow=false;
+B(0.1,3.1,0.15,M.doorFrame,-2.0,1.95,8.2);
+B(0.1,3.1,0.15,M.doorFrame,1.0,1.95,8.2);
+B(3.1,0.1,0.15,M.doorFrame,-0.5,3.45,8.2);
+B(0.05,3.1,0.15,M.doorFrame,-0.5,1.95,8.2);
+CY(0.022,0.8,M.gold,-0.6,1.5,8.28);
+CY(0.022,0.8,M.gold,-0.4,1.5,8.28);
 
+// ── DIVIDING WALL ──
+B(0.4,1.2,6,M.wallAcc,4,0.6,-5);
+B(0.4,1.2,6,M.wallAcc,4,0.6,5);
+const dg1=B(0.1,3.0,6,M.glassWall,4,2.7,-5); dg1.castShadow=false;
+const dg2=B(0.1,3.0,6,M.glassWall,4,2.7,5); dg2.castShadow=false;
+const dg3=B(0.1,1.2,4,M.glassWall,4,3.6,0); dg3.castShadow=false;
+B(0.45,0.05,16,M.doorFrame,4,1.2,0);
+B(0.45,3.0,0.1,M.doorFrame,4,2.7,-2);
+B(0.45,3.0,0.1,M.doorFrame,4,2.7,2);
 
-// ── DIVIDING WALL & STORE DOOR (X=4) ──
-B(0.4, 1.2, 6, M.wallAcc, 4, 0.6, -5); 
-B(0.4, 1.2, 6, M.wallAcc, 4, 0.6,  5); 
-B(0.1, 3.0, 6, M.glassWall, 4, 2.7, -5).castShadow = false; 
-B(0.1, 3.0, 6, M.glassWall, 4, 2.7,  5).castShadow = false;
-B(0.1, 1.2, 4, M.glassWall, 4, 3.6, 0).castShadow = false; 
-B(0.45, 0.05, 16, M.doorFrame, 4, 1.2, 0); 
-B(0.45, 3.0, 0.1, M.doorFrame, 4, 2.7, -2); 
-B(0.45, 3.0, 0.1, M.doorFrame, 4, 2.7, 2);  
+const storeDoorGroup=new THREE.Group();
+const sDoorGlass=new THREE.Mesh(new THREE.BoxGeometry(0.05,2.9,3.8),M.glassWall); sDoorGlass.position.set(0,1.45,0);
+const sDoorHandle=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.8),M.gold); sDoorHandle.position.set(0.1,1.45,1.6);
+storeDoorGroup.add(sDoorGlass,sDoorHandle); storeDoorGroup.position.set(4,0,0); scene.add(storeDoorGroup);
 
-const storeDoorGroup = new THREE.Group();
-const sDoorGlass = new THREE.Mesh(new THREE.BoxGeometry(0.05, 2.9, 3.8), M.glassWall); sDoorGlass.position.set(0, 1.45, 0);
-const sDoorHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.8), M.doorFrame); sDoorHandle.position.set(0.1, 1.45, 1.6);
-storeDoorGroup.add(sDoorGlass, sDoorHandle); storeDoorGroup.position.set(4, 0, 0); scene.add(storeDoorGroup);
+const signMesh=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.6,1.6),M.sign);
+signMesh.position.set(3.9,2.2,0); scene.add(signMesh);
 
-const signMesh = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.6, 1.6), M.sign);
-signMesh.position.set(3.9, 2.2, 0); scene.add(signMesh);
+// ── REALISTIC LAPTOP ──
+function createLaptop(x,y,z,rot,bodyMat,openAngle=1.82){
+  const g=new THREE.Group();
 
-// ── LOUNGE DECOR ──
+  // Base / chassis
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.35,0.018,0.25),bodyMat);
+  base.position.set(0,0.009,0); base.castShadow=true; g.add(base);
 
-// Shared Laptop Builder Function
-function createLaptop(x, y, z, rot, mat) {
-  const g = new THREE.Group();
-  const base = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.02, 0.25), mat);
-  base.position.set(0, 0.01, 0); base.castShadow = true;
+  // Keyboard area (slightly recessed dark panel)
+  const kbd=new THREE.Mesh(new THREE.BoxGeometry(0.30,0.002,0.20),M.screenBezel);
+  kbd.position.set(0,0.019,0.01); g.add(kbd);
 
-  const hinge = new THREE.Group();
-  hinge.position.set(0, 0.02, -0.125); 
-  hinge.rotation.x = -1.8; // Open 103 degrees
+  // Trackpad
+  const tp=new THREE.Mesh(new THREE.BoxGeometry(0.10,0.002,0.07),new THREE.MeshStandardMaterial({color:0x1c1c1e,roughness:0.15,metalness:0.5,envMap,envMapIntensity:0.8}));
+  tp.position.set(0,0.020,0.075); g.add(tp);
 
-  const lid = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.25, 0.02), mat);
-  lid.position.set(0, 0.125, -0.01); lid.castShadow = true;
+  // Hinge group
+  const hinge=new THREE.Group();
+  hinge.position.set(0,0.018,-0.125);
+  hinge.rotation.x=-openAngle;
 
-  const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.32, 0.22), M.screenGlow);
-  scr.position.set(0, 0.125, 0.001); 
+  // Lid outer (metal back)
+  const lid=new THREE.Mesh(new THREE.BoxGeometry(0.35,0.23,0.016),bodyMat);
+  lid.position.set(0,0.115,-0.008); lid.castShadow=true; hinge.add(lid);
 
-  hinge.add(lid, scr);
-  g.add(base, hinge);
-  g.position.set(x, y, z); g.rotation.y = rot; scene.add(g);
+  // Screen bezel (inner frame)
+  const bezel=new THREE.Mesh(new THREE.BoxGeometry(0.335,0.215,0.004),M.screenBezel);
+  bezel.position.set(0,0.115,0.002); hinge.add(bezel);
+
+  // Screen panel
+  const scr=new THREE.Mesh(new THREE.PlaneGeometry(0.305,0.195),M.screen);
+  scr.position.set(0,0.115,0.005); hinge.add(scr);
+
+  // Screen glow point
+  const glow=new THREE.PointLight(0x3a6aff,0.08,0.4);
+  glow.position.set(0,0.115,0.02); hinge.add(glow);
+
+  g.add(hinge);
+  g.position.set(x,y,z); g.rotation.y=rot;
+  scene.add(g); return g;
 }
 
-// 1. Reception Area (Front Right)
-const recX = 1.5, recZ = 4.8;
-// Base counter
-B(3.5, 0.9, 0.9, M.wallAcc, recX, 0.45, recZ);
-B(3.5, 0.05, 0.95, M.shelfLED, recX, 0.05, recZ); // Toe kick LED
-// Tinted glass upper counter / cuboid
-B(3.5, 1.1, 0.3, M.glassTinted, recX, 0.55, recZ + 0.3).castShadow = false; 
-// Two Laptops for receptionists (Facing entrance)
-createLaptop(recX - 0.7, 0.9, recZ - 0.1, 0, M.lapSilver);
-createLaptop(recX + 0.7, 0.9, recZ - 0.1, 0, M.lapBlack);
-// Receptionist Chair
-CY(0.25, 0.05, M.doorFrame, recX, 0.025, recZ - 1.0); // Base
-CY(0.04, 0.4, M.doorFrame, recX, 0.25, recZ - 1.0);   // Stem
-B(0.5, 0.05, 0.5, M.chairFabric, recX, 0.45, recZ - 1.0); // Seat
-B(0.5, 0.5, 0.05, M.chairFabric, recX, 0.7, recZ - 1.22); // Back
+// ── RECEPTION ──
+const recX=1.5,recZ=4.8;
+B(3.5,0.9,0.9,M.wallAcc,recX,0.45,recZ);
+B(3.5,0.05,0.95,M.shelfLED,recX,0.05,recZ);
+const rg=B(3.5,1.1,0.3,M.glassTinted,recX,0.55,recZ+0.3); rg.castShadow=false;
+createLaptop(recX-0.7,0.9,recZ-0.1,0,M.lapSilver);
+createLaptop(recX+0.7,0.9,recZ-0.1,0,M.lapBlack);
+CY(0.25,0.05,M.doorFrame,recX,0.025,recZ-1.0);
+CY(0.04,0.4,M.doorFrame,recX,0.25,recZ-1.0);
+B(0.5,0.05,0.5,M.chairFabric,recX,0.45,recZ-1.0);
+B(0.5,0.5,0.05,M.chairFabric,recX,0.7,recZ-1.22);
 
-// 2. Center Area: Rug & Table (Shifted left to X = -5.5)
-const centX = -5.5;
-B(8, 0.02, 6, M.rug, centX, 0.01, 0); 
-CY(0.9, 0.05, M.marbleBlack, centX, 0.45, 0);
-CY(0.05, 0.4, M.gold, centX, 0.2, 0);
-CY(0.4, 0.05, M.gold, centX, 0.0, 0);
-const artDecor = new THREE.Mesh(new THREE.IcosahedronGeometry(0.15), M.gold);
-artDecor.position.set(centX, 0.6, 0); artDecor.castShadow=true; scene.add(artDecor);
+// ── CENTER SEATING ──
+const centX=-5.5;
+B(8,0.02,6,M.rug,centX,0.01,0);
+CY(0.9,0.05,M.marbleBlack,centX,0.45,0);
+CY(0.05,0.4,M.gold,centX,0.2,0);
+CY(0.4,0.05,M.gold,centX,0.0,0);
+const artDecor=new THREE.Mesh(new THREE.IcosahedronGeometry(0.15,1),M.gold);
+artDecor.position.set(centX,0.6,0); artDecor.castShadow=true; scene.add(artDecor);
 
-// 3. Cognac Leather Sofas
-function createSofa(x, z, rot) {
-  const g = new THREE.Group();
-  const base = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.3, 1.1), M.leather); base.position.set(0, 0.15, 0);
-  const back = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.7, 0.3), M.leather); back.position.set(0, 0.65, -0.4);
-  const armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.5, 1.1), M.leather); armL.position.set(-1.15, 0.4, 0);
-  const armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.5, 1.1), M.leather); armR.position.set(1.15, 0.4, 0);
-  
-  const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.15), M.pillowT); p1.position.set(-0.8, 0.5, -0.2); p1.rotation.set(0.2, 0.1, 0.1);
-  const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.15), M.pillowE); p2.position.set(0.8, 0.5, -0.2); p2.rotation.set(0.2, -0.2, -0.1);
-  const p3 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.15), M.pillowT); p3.position.set(0.6, 0.45, -0.15); p3.rotation.set(0.3, 0.1, 0.2);
-
-  base.castShadow=true; back.castShadow=true; armL.castShadow=true; armR.castShadow=true;
-  g.add(base, back, armL, armR, p1, p2, p3); g.position.set(x, 0, z); g.rotation.y = rot; scene.add(g);
-}
-createSofa(centX, 2.8, Math.PI); 
-createSofa(centX, -2.8, 0);      
-createSofa(centX - 3.2, 0, Math.PI/2); 
-
-// 4. Museum Wall Frame & Light
-const frameX = -5.5, frameY = 2.0, frameZ = -8.0;
-B(4.0, 2.6, 0.08, M.artFrame, frameX, frameY, frameZ); 
-B(3.8, 2.4, 0.12, M.artCanvas, frameX, frameY, frameZ); 
-
-const lFix = new THREE.Group();
-const lightBar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.5, 16), M.gold);
-lightBar.rotation.z = Math.PI/2; lightBar.position.set(0, 0, 0);
-const arm1 = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.25), M.gold); arm1.rotation.x = Math.PI/2; arm1.position.set(-1, 0, -0.125);
-const arm2 = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.25), M.gold); arm2.rotation.x = Math.PI/2; arm2.position.set(1, 0, -0.125);
-lFix.add(lightBar, arm1, arm2); lFix.position.set(frameX, frameY + 1.6, frameZ + 0.25); scene.add(lFix);
-
-const artSpot = new THREE.SpotLight(0xfff0e0, 1.8, 10, Math.PI/3, 0.5, 1);
-artSpot.position.set(frameX, frameY + 1.6, frameZ + 0.25); artSpot.target.position.set(frameX, frameY, frameZ);
-scene.add(artSpot); scene.add(artSpot.target);
-
-// 5. Multilayer Seamless Show Glass Shelf (Gallery Wall)
-const galleryX = -11.6;
-const galGroup = new THREE.Group();
-B(0.4, 3.6, 12, M.wallAcc, 0, 1.8, 0).parent = galGroup; // Backplate
-B(0.45, 3.6, 0.1, M.doorFrame, 0, 1.8, -6).parent = galGroup; // Border L
-B(0.45, 3.6, 0.1, M.doorFrame, 0, 1.8, 6).parent = galGroup;  // Border R
-
-for(let r=1; r<=3; r++) {
-    let shelfHeight = r*0.9;
-    B(0.55, 0.04, 11.8, M.glassShelf, 0.05, shelfHeight, 0).parent = galGroup;
-    B(0.02, 0.04, 11.8, M.shelfLED, -0.18, shelfHeight, 0).parent = galGroup;
-}
-galGroup.position.set(galleryX, 0, 0); scene.add(galGroup);
-
-const laptopMats = [ M.lapBlack, M.lapSilver, M.lapPink, M.lapGold, M.lapBlue ];
-for(let r=1; r<=3; r++) {
-  let shelfTop = r*0.9 + 0.02; 
-  for(let cz = -5.0; cz <= 5.0; cz += 1.2) { 
-    if(Math.random() > 0.15) { 
-       let cx = galleryX + 0.15;
-       let mat = laptopMats[Math.floor(Math.random() * laptopMats.length)];
-       let rot = Math.PI/2 + (Math.random()*0.3 - 0.15); 
-       
-       createLaptop(cx, shelfTop, cz + (Math.random()*0.2 - 0.1), rot, mat);
-       const spot = new THREE.SpotLight(0xffffff, 0.6, 2.0, Math.PI/4, 0.5, 2);
-       spot.position.set(cx, shelfTop + 0.8, cz); spot.target.position.set(cx, shelfTop, cz);
-       scene.add(spot); scene.add(spot.target);
-    }
-  }
-}
-
-// 6. Double Deck Fridge (Back Right Corner)
-const fX = 2.8, fZ = -7.4;
-B(1.4, 2.6, 1.2, M.fridgeMetal, fX, 1.3, fZ); // Body
-B(1.42, 1.6, 0.05, M.fridgeMetal, fX, 1.8, fZ+0.6); // Top French Doors
-B(1.42, 0.9, 0.05, M.fridgeMetal, fX, 0.5, fZ+0.6); // Bottom Drawer
-B(0.02, 1.6, 0.06, M.doorFrame, fX, 1.8, fZ+0.6); // French Door split
-// Fridge Handles
-B(0.03, 0.8, 0.06, M.lapSilver, fX - 0.1, 1.6, fZ+0.65);
-B(0.03, 0.8, 0.06, M.lapSilver, fX + 0.1, 1.6, fZ+0.65);
-B(0.8, 0.03, 0.06, M.lapSilver, fX, 0.8, fZ+0.65); // Drawer handle
-// Dispenser Cutout
-B(0.3, 0.4, 0.06, M.doorFrame, fX - 0.35, 1.5, fZ+0.6);
-
-// 7. Floor Standing AC (Near Gallery)
-const acX = -10.5, acZ = -7.4;
-B(0.6, 2.4, 0.6, M.waterBody, acX, 1.2, acZ); 
-B(0.5, 1.0, 0.05, M.doorFrame, acX, 1.2, acZ+0.3); // Grill
-B(0.2, 0.1, 0.02, M.sign, acX, 2.0, acZ+0.31); // Display
-const acLED = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.05), M.screenGlow);
-acLED.position.set(acX, 2.0, acZ+0.32); scene.add(acLED);
-
-// 8. Plant Vases
-function createPlant(x, z) {
-  CY(0.3, 0.6, M.wallLounge, x, 0.3, z); // Pot
-  const l1 = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16,16), M.plantLeaves); l1.position.set(x, 0.9, z); l1.castShadow=true;
-  const l2 = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16,16), M.plantLeaves); l2.position.set(x+0.2, 1.3, z-0.1); l2.castShadow=true;
-  const l3 = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16,16), M.plantLeaves); l3.position.set(x-0.2, 1.1, z+0.1); l3.castShadow=true;
-  scene.add(l1,l2,l3);
-}
-createPlant(-2.5, 7.2); // Near Entrance
-createPlant(-10.5, 7.2); // Front corner near gallery
-
-// 9. Bank-Style Flush Ceiling Lights
-for(let cx = -9; cx <= 1; cx += 4) {
-    for(let cz = -5; cz <= 5; cz += 5) {
-        B(2.0, 0.05, 1.0, M.ceilPanel, cx, 4.25, cz);
-        B(2.1, 0.06, 1.1, M.doorFrame, cx, 4.26, cz);
-        const pl = new THREE.PointLight(0xfffcf0, 0.5, 9);
-        pl.position.set(cx, 4.1, cz); scene.add(pl);
-    }
-}
-
-
-// ── STORE ROOM DECOR (STAFF ONLY) ──
-function createShelfUnit(x, z, rotY) {
-  const g = new THREE.Group();
-  B(0.05, 3.5, 1.0, M.shelfMetal, -1.2, 1.75, 0).parent = g;
-  B(0.05, 3.5, 1.0, M.shelfMetal,  1.2, 1.75, 0).parent = g;
-  for(let i=1; i<=4; i++) B(2.4, 0.05, 1.0, M.shelfMetal, 0, i*0.7, 0).parent = g;
-  g.position.set(x, 0, z); g.rotation.y = rotY; scene.add(g);
-}
-
-createShelfUnit(12.5, 0, Math.PI/2); 
-createShelfUnit(12.5, 2.4, Math.PI/2); 
-createShelfUnit(12.5, -2
+function createSofa(x,z,rot){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.3,1.1),M.leather); base.position.set(0,0.15,0);
+  const back=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.7,0.3),M.leather); back.position.set(0,0.65,-0.4);
+  const armL=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.5,1.1),M.leather); armL.position.set(-1.15,0.4,0);
+  const armR=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.5,1.1),M.leather); armR.position.set(1.15,0.4,0);
+  const p1=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.15),M.pillowT); p1.position.set(-0.8,0.5,-0.2); p1.rotation.set(0.2,0.1,0.1);
+  const p2=new THREE.Mesh(new THREE.BoxGeometry(0.35,0.35,0.15),M.pillowE); p2.position.set(0.8,0.5
